@@ -3940,7 +3940,7 @@ var ExplorerView = class extends import_obsidian11.ItemView {
   // 恢復暫存檔案列表
   restoreStashFiles(state) {
     if ((state == null ? void 0 : state.stashFilePaths) && Array.isArray(state.stashFilePaths)) {
-      const validPaths = state.stashFilePaths.filter((p) => typeof p === "string" && p).filter((p) => this.app.vault.getAbstractFileByPath(p) instanceof import_obsidian11.TFile);
+      const validPaths = state.stashFilePaths.filter((p) => typeof p === "string" && p && this.app.vault.getAbstractFileByPath(p) instanceof import_obsidian11.TFile);
       this.stashFilePaths = Array.from(new Set(validPaths));
       this.persistStashToSettings();
     }
@@ -3954,7 +3954,7 @@ var ExplorerView = class extends import_obsidian11.ItemView {
       const paths = (_a = this.plugin.settings) == null ? void 0 : _a.explorerStashPaths;
       if (!Array.isArray(paths))
         return;
-      const validPaths = paths.filter((p) => typeof p === "string" && p).filter((p) => this.app.vault.getAbstractFileByPath(p) instanceof import_obsidian11.TFile);
+      const validPaths = paths.filter((p) => typeof p === "string" && p && this.app.vault.getAbstractFileByPath(p) instanceof import_obsidian11.TFile);
       this.stashFilePaths = Array.from(new Set(validPaths));
     } catch (e) {
     }
