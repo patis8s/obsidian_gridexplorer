@@ -9694,8 +9694,8 @@ var GridView = class extends import_obsidian20.ItemView {
       });
     }, {
       root: container,
-      rootMargin: "50px",
-      // 預先載入視窗外 50px 的內容
+      rootMargin: "0px 0px 100000px 0px",
+      // 上下左右ではなく下方向のみ 100,000px 拡張し、スクロール前のカードも先読みする
       threshold: 0.1
     });
     if (files.length > 0) {
