@@ -1,0 +1,90 @@
+{
+  "ignoredFolders": [],
+  "ignoredFolderPatterns": [],
+  "defaultSortType": "mtime-desc",
+  "gridItemWidth": 230,
+  "gridItemHeight": 0,
+  "imageAreaWidth": 100,
+  "imageAreaHeight": 80,
+  "verticalGridItemWidth": 200,
+  "verticalGridItemHeight": 0,
+  "verticalImageAreaHeight": 180,
+  "verticalCardImagePosition": "top",
+  "titleFontSize": 1,
+  "multiLineTitle": false,
+  "summaryLength": 100,
+  "enableFileWatcher": true,
+  "folderDisplayStyle": "show",
+  "showMediaFiles": true,
+  "showVideoThumbnails": true,
+  "defaultOpenLocation": "tab",
+  "reuseExistingLeaf": true,
+  "showBookmarksMode": false,
+  "showSearchMode": true,
+  "showBacklinksMode": true,
+  "showOutgoinglinksMode": false,
+  "showAllFilesMode": false,
+  "showRandomNoteMode": true,
+  "showRecentFilesMode": true,
+  "showTasksMode": false,
+  "recentFilesCount": 30,
+  "randomNoteCount": 10,
+  "customFolderIcon": "📁",
+  "customDocumentExtensions": "",
+  "recentSources": [],
+  "noteTitleField": "",
+  "noteSummaryField": "",
+  "modifiedDateField": "",
+  "createdDateField": "",
+  "showNoteTags": true,
+  "cardLayout": "horizontal",
+  "dateDividerMode": "none",
+  "showCodeBlocksInSummary": false,
+  "folderNoteDisplaySettings": "default",
+  "interceptAllTagClicks": true,
+  "interceptBreadcrumbClicks": true,
+  "customModes": [
+    {
+      "internalName": "custom-1762151841095",
+      "icon": "🧩",
+      "displayName": "cosence",
+      "name": "default",
+      "dataviewCode": "// 1. Profileはそのまま最優先\nlet withProfile = dv.pages('\"cosence/tkyn\" or \"my/cosence\"')\n  .where(p => p.file.name === \"Profile\" && !p.file.tags.includes(\"#vocabulary_link\"))\n  .sort(p => p.file.mtime, \"desc\");\n\n// 2. Memo または Tasks を抽出するように変更\nlet withTop = dv.pages('\"cosence/tkyn\" or \"my/cosence\"')\n  .where(p => (p.file.name === \"Memo\" || p.file.name === \"Tasks\" || p.file.name === \"習慣まとめ\") && !p.file.tags.includes(\"#vocabulary_link\"))\n  .sort(p => p.file.mtime, \"desc\");\n\n// 3. その他（MemoとTasksがここで重複しないよう除外設定を追加）\nlet others = dv.pages('\"cosence/tkyn\" or \"cosence/_vocabulary detail\" or \"my/cosence\"')\n  .where(p => p.file.name !== \"Profile\" && p.file.name !== \"Memo\" && p.file.name !== \"Tasks\" && p.file.name !== \"習慣まとめ\" && !p.file.tags.includes(\"#vocabulary_link\"))\n  .sort(p => p.file.mtime, \"desc\");\n \nreturn withProfile.concat(withTop).concat(others);",
+      "options": [
+        {
+          "name": "★☆☆",
+          "dataviewCode": "let withProfile = dv.pages('\"cosence/tkyn\"')\n  .where(p => p.file.name === \"Profile\" && !p.file.tags.includes(\"#vocabulary_link\"))\n  .sort(p => p.file.mtime, \"desc\");\n\nlet withTop = dv.pages('\"cosence/tkyn\"')\n  .where(p => p.file.name === \"Memo\" && p.file.name !== \"Profile\" && !p.file.tags.includes(\"#vocabulary_link\"))\n  .sort(p => p.file.mtime, \"desc\");\n\nlet others = dv.pages('\"cosence/tkyn\" or \"cosence/_vocabulary detail\"')\n  .where(p => p.file.name !== \"Profile\" \n    && p.file.name !== \"Memo\" \n    && !p.file.tags.includes(\"#vocabulary_link\")\n    && p.file.tags.includes(\"#★☆☆\"))\n  .sort(p => p.file.mtime, \"desc\");\n \nreturn withProfile.concat(withTop).concat(others);"
+        },
+        {
+          "name": "★★☆",
+          "dataviewCode": "let withProfile = dv.pages('\"cosence/tkyn\"')\n  .where(p => p.file.name === \"Profile\" && !p.file.tags.includes(\"#vocabulary_link\"))\n  .sort(p => p.file.mtime, \"desc\");\n\nlet withTop = dv.pages('\"cosence/tkyn\"')\n  .where(p => p.file.name === \"Memo\" && p.file.name !== \"Profile\" && !p.file.tags.includes(\"#vocabulary_link\"))\n  .sort(p => p.file.mtime, \"desc\");\n\nlet others = dv.pages('\"cosence/tkyn\" or \"cosence/_vocabulary detail\"')\n  .where(p => p.file.name !== \"Profile\" \n    && p.file.name !== \"Memo\" \n    && !p.file.tags.includes(\"#vocabulary_link\")\n    && p.file.tags.includes(\"#★★☆\"))\n  .sort(p => p.file.mtime, \"desc\");\n \nreturn withProfile.concat(withTop).concat(others);"
+        },
+        {
+          "name": "★★★",
+          "dataviewCode": "let withProfile = dv.pages('\"cosence/tkyn\"')\n  .where(p => p.file.name === \"Profile\" && !p.file.tags.includes(\"#vocabulary_link\"))\n  .sort(p => p.file.mtime, \"desc\");\n\nlet withTop = dv.pages('\"cosence/tkyn\"')\n  .where(p => p.file.name === \"Memo\" && p.file.name !== \"Profile\" && !p.file.tags.includes(\"#vocabulary_link\"))\n  .sort(p => p.file.mtime, \"desc\");\n\nlet others = dv.pages('\"cosence/tkyn\" or \"cosence/_vocabulary detail\"')\n  .where(p => p.file.name !== \"Profile\" \n    && p.file.name !== \"Memo\" \n    && !p.file.tags.includes(\"#vocabulary_link\")\n    && p.file.tags.includes(\"#★★★\"))\n  .sort(p => p.file.mtime, \"desc\");\n \nreturn withProfile.concat(withTop).concat(others);"
+        }
+      ],
+      "enabled": true,
+      "fields": ""
+    },
+    {
+      "internalName": "custom-1762152746417",
+      "icon": "🧩",
+      "displayName": "RevIN",
+      "name": "デフォルト",
+      "dataviewCode": "return dv.pages(\"#RevIN\").sort(p => p.file.mtime, \"desc\");",
+      "options": [],
+      "enabled": true,
+      "fields": ""
+    }
+  ],
+  "quickAccessCommandPath": "",
+  "useQuickAccessAsNewTabMode": "default",
+  "quickAccessModeType": "custom-1762151841095",
+  "showNoteInGrid": false,
+  "openNoteLayout": "split",
+  "searchCurrentLocationOnly": false,
+  "searchFilesNameOnly": false,
+  "searchMediaFiles": false,
+  "explorerStashPaths": []
+}
