@@ -3940,7 +3940,7 @@ var ExplorerView = class extends import_obsidian11.ItemView {
   // 恢復暫存檔案列表
   restoreStashFiles(state) {
     if ((state == null ? void 0 : state.stashFilePaths) && Array.isArray(state.stashFilePaths)) {
-      const validPaths = state.stashFilePaths.filter((p) => typeof p === "string" && p).filter((p) => this.app.vault.getAbstractFileByPath(p) instanceof import_obsidian11.TFile);
+      const validPaths = state.stashFilePaths.filter((p) => typeof p === "string" && p && this.app.vault.getAbstractFileByPath(p) instanceof import_obsidian11.TFile);
       this.stashFilePaths = Array.from(new Set(validPaths));
       this.persistStashToSettings();
     }
@@ -3954,7 +3954,7 @@ var ExplorerView = class extends import_obsidian11.ItemView {
       const paths = (_a = this.plugin.settings) == null ? void 0 : _a.explorerStashPaths;
       if (!Array.isArray(paths))
         return;
-      const validPaths = paths.filter((p) => typeof p === "string" && p).filter((p) => this.app.vault.getAbstractFileByPath(p) instanceof import_obsidian11.TFile);
+      const validPaths = paths.filter((p) => typeof p === "string" && p && this.app.vault.getAbstractFileByPath(p) instanceof import_obsidian11.TFile);
       this.stashFilePaths = Array.from(new Set(validPaths));
     } catch (e) {
     }
@@ -9337,6 +9337,7 @@ var GridView = class extends import_obsidian20.ItemView {
         clearTimeout(timer);
         timer = setTimeout(() => {
           if (container.classList.contains('ge-vertical-card')) return;
+          const savedScrollTop = container.scrollTop;
           const items = Array.from(container.querySelectorAll('.ge-grid-item:not(.ge-folder-item):not(.ge-media-card)'));
           // Reset min-height so we can measure natural heights
           items.forEach(el => el.style.minHeight = '');
@@ -9354,6 +9355,7 @@ var GridView = class extends import_obsidian20.ItemView {
             const maxH = Math.max(...rowItems.map(el => el.scrollHeight));
             rowItems.forEach(el => el.style.minHeight = maxH + 'px');
           });
+          container.scrollTop = savedScrollTop;
         }, 80);
       };
     })();
@@ -9692,8 +9694,8 @@ var GridView = class extends import_obsidian20.ItemView {
       });
     }, {
       root: container,
-      rootMargin: "50px",
-      // 預先載入視窗外 50px 的內容
+      rootMargin: "0px 0px 100000px 0px",
+      // 上下左右ではなく下方向のみ 100,000px 拡張し、スクロール前のカードも先読みする
       threshold: 0.1
     });
     if (files.length > 0) {
@@ -11654,51 +11656,32 @@ var GridExplorerPlugin = class extends import_obsidian22.Plugin {
           this.checkForNewTab(existingLeaves);
         })
       );
+      this.startWarmingCache();
     });
   }
-  // startWarmingCache() {
-  //     // 1. 取得所有 Markdown 檔案的列表
-  //     const filesToWarm = this.app.vault.getMarkdownFiles();
-  //     if (!filesToWarm || filesToWarm.length === 0) {
-  //         console.log('GridExplorer: No markdown files to warm.');
-  //         return;
-  //     }
-  //     // 建立一個檔案佇列 (Queue)
-  //     let fileQueue = [...filesToWarm];
-  //     console.log(`GridExplorer: Warming up cache for ${fileQueue.length} files.`);
-  //     // 2. 定義處理單個檔案的函式
-  //     // 我們會使用 app.vault.cachedRead 來讀取檔案內容，
-  //     // 這個動作會觸發 Obsidian 的快取機制。
-  //     const processFile = (file: TFile) => {
-  //         try {
-  //             // 核心操作：讀取檔案。我們不需要對回傳的 content 做任何事。
-  //             this.app.vault.cachedRead(file);
-  //             // console.log(`Warmed: ${file.path}`); // 可選：用於除錯
-  //         } catch (e) {
-  //             console.error(`GridExplorer: Failed to warm cache for ${file.path}:`, e);
-  //         }
-  //     };
-  //     // 3. 使用 requestIdleCallback 來排程任務
-  //     const scheduleNextBatch = (deadline: IdleDeadline) => {
-  //         // deadline.timeRemaining() 會告訴我們還有多少閒置時間 (毫秒)
-  //         // 只要還有閒置時間，並且佇列中還有檔案，我們就繼續處理。
-  //         while (deadline.timeRemaining() > 0 && fileQueue.length > 0) {
-  //             // 從佇列的前端取出一個檔案來處理
-  //             const file = fileQueue.shift();
-  //             if (file) {
-  //                 processFile(file);
-  //             }
-  //         }
-  //         // 如果佇列中還有檔案沒處理完，就排程下一次的 requestIdleCallback
-  //         if (fileQueue.length > 0) {
-  //             requestIdleCallback(scheduleNextBatch);
-  //         } else {
-  //             console.log('GridExplorer: Cache warming complete.');
-  //         }
-  //     };
-  //     // 4. 啟動第一個閒置回呼
-  //     requestIdleCallback(scheduleNextBatch);
-  // }
+  startWarmingCache() {
+    const filesToWarm = this.app.vault.getMarkdownFiles();
+    if (!filesToWarm || filesToWarm.length === 0) return;
+    let fileQueue = [...filesToWarm];
+    const scheduleNextBatch = (deadline) => {
+      while (deadline.timeRemaining() > 0 && fileQueue.length > 0) {
+        const file = fileQueue.shift();
+        if (file) this.app.vault.cachedRead(file).catch(() => {});
+      }
+      if (fileQueue.length > 0) {
+        if (typeof window.requestIdleCallback === "function") {
+          window.requestIdleCallback(scheduleNextBatch);
+        } else {
+          setTimeout(() => scheduleNextBatch({ timeRemaining: () => 50 }), 200);
+        }
+      }
+    };
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(scheduleNextBatch);
+    } else {
+      setTimeout(() => scheduleNextBatch({ timeRemaining: () => 50 }), 200);
+    }
+  }
   // 設定 Canvas 拖曳處理
   setupCanvasDropHandlers() {
     const setup = () => {

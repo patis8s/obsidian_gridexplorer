@@ -838,7 +838,6 @@ span.ge-mode-title {
     font-size: var(--font-ui-small);
     display: inline-flex;
     align-items: center;
-    border: none;
     border-radius: 6px;
     border: 1px solid var(--background-modifier-hover);
     background: var(--background-primary);
@@ -1006,7 +1005,6 @@ a.ge-current-folder:hover {
     align-items: center;
     padding: 3px 7px;
     background-color: var(--background-modifier-active-hover);
-    border: 1px solid var(--background-modifier-border);
     border-radius: 4px;
     white-space: nowrap;
     overflow: hidden;
@@ -1073,7 +1071,7 @@ a.ge-current-folder:hover {
 
 .ge-search-container input {
     width: 100%;
-    padding: 8px 12px;
+    padding: 8px 25px 8px 12px;
     border: 1px solid var(--background-modifier-border);
     border-radius: 4px;
     background-color: var(--background-primary);
@@ -1081,7 +1079,6 @@ a.ge-current-folder:hover {
     font-size: var(--font-ui-medium);
     outline: none;
     transition: border-color 0.2s;
-    padding-right: 25px;
 }
 
 .ge-search-container input:focus {
